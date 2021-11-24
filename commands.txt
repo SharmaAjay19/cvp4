@@ -1,0 +1,3 @@
+py pose_regress.py --mode=unit_test --outdir=out --h5_filename=data/pontiac_360.h5
+
+py pose_regress.py --mode=train_and_test --n_epochs=1 --eval_every_n_epochs=1 --h5_filename=data/pontiac_360.h5 --outdir=out --split_name=cvd_split_every5  --viz_pose3d
