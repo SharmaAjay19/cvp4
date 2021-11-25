@@ -118,7 +118,8 @@ def setup_xforms_and_data_loaders(par):
         call setup_data_loaders(par) defined in data_io.data_loaders
         It returns a tuple (train loader, test loader)
         """
-        return (None, None) # for now
+        train_loader, test_loader = data_io.data_loaders.setup_data_loaders(par)
+        #return (None, None) # for now
 
     return (train_loader, test_loader)
 
@@ -161,7 +162,8 @@ def load_batch_of_data(data_loader, par):
         "wrapping" data_loader in an iterator, i.e., iter(...)
         and calling next(...) on the iterator
         """
-        return None  # for now
+        batch_data = next(iter(data_loader))
+        #return None  # for now
 
     return batch_data
 
