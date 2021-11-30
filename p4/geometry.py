@@ -78,13 +78,24 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
         good try on your own.
 
         """
-        # for now we create placeholders
         R = np.eye(3)
-        T = np.array([2,2,2]) 
+        forward = (at_world - eye_world)
+        forward = forward / np.linalg.norm(forward)
+        random_vector = np.array([0, 0, 1])
+        random_vector = random_vector / np.linalg.norm(random_vector)
+        right = np.cross(random_vector, forward)
+        up = np.cross(forward, right)
+        R[:, 0] = right
+        R[:, 1] = up
+        R[:, 2] = forward
+        T = eye_world
+        # for now we create placeholders 
+        #R = np.eye(3)
+        #T = np.array([2,2,2])
 
 
     P1[0:3,0:3] = R
-    P1[0:3,-1] = T 
+    P1[0:3,-1] = T
     """
     At this point, we have defined a transformation in the homogeneous coordinates that
     "moves" the camera's coordinate system (3-axis) from its old location, coincident with
@@ -96,7 +107,6 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
     thus:
     """
     P1 = np.linalg.pinv(P1) # pseudo-inverse via SVD
-
     """
     Taking an inverse of P1 via pseudeo-inverse is wasteful because
     we are not taking advantage of the special structure of P1
@@ -123,6 +133,11 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
 
         assert np.allclose(P, P1) <-- should not fail!
         """
+        P[0:3, 0:3] = R.T
+        P[-1, 0:3] = T
+        P = np.linalg.pinv(P)
+        P = P.T
+        assert np.allclose(P, P1)
         pass
     
     return P1
