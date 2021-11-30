@@ -45,7 +45,8 @@ import matplotlib.pyplot as plt
 def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag):
     """
     You can view nice figures related to the "Look At" transformation  in [R1]
-    but keep in mind that our construction will be different (but arriving at the same result)
+    but keep in mind that our construction will be different (our positive Z-axis will point toward look-at)
+
     
 
     [R1] https://learnopengl.com/Getting-started/Camera
@@ -63,21 +64,32 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
         pass
     else:
         """
+        :TODO:
+        Compute R and T such that they "move" (transform) a camera located
+        at the origin of the world coordinate system (camera's center is at (0,0,0)
+        and the camera's Z-axis is aligned with the world coordinate system's Z-axis) 
+        to a pose where the camera's center is at "eye_world" and the camera's z-axis is
+        pointing at "at_world". The camera should be horizontal (i.e., no roll) so the horizon line
+        would appear along the camera's rows.
+        
+
         Try to work out the math on your own. We will post detailed
         hints on Ed; please use them only after you've given this a
         good try on your own.
+
         """
         # for now we create placeholders
-        R = np.eye(3) 
-        P1[0:3,-1] = np.array([2,2,2]) # see comment about the correct value
+        R = np.eye(3)
+        T = np.array([2,2,2]) 
 
 
     P1[0:3,0:3] = R
+    P1[0:3,-1] = T 
     """
-    We have defined a transformation in the homogeneous coordinates that
-    transforms the world coordinate system (3-axis) into the camera coordinate system
-
-    In particular (by construction) np.matmul(P1, eye_world_4d) -> eye_world_4d
+    At this point, we have defined a transformation in the homogeneous coordinates that
+    "moves" the camera's coordinate system (3-axis) from its old location, coincident with
+    the world coordinate sytem to a new location, consistent with "eye" and "look at."
+    In particular (by construction) np.matmul(P1, look_at_4d) -> eye_world_4d
 
     However, we are interested in how the world looks in the camera coordinate system,
     i.e., transofrming world coordinates into camera coordinates,
@@ -91,6 +103,10 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
 
     Let's construct a different matrix, call it "P" such that
     when we do a P.T (transpose), we'll recover P1
+
+
+    Note that we're constructing both P1 and P as an exercise; in practice you'd
+    construct P, and then use P.T in the client code (i.e., would not bother with P1)
     """
     P = np.eye(4)
 

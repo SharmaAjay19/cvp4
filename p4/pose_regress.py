@@ -118,8 +118,7 @@ def setup_xforms_and_data_loaders(par):
         call setup_data_loaders(par) defined in data_io.data_loaders
         It returns a tuple (train loader, test loader)
         """
-        train_loader, test_loader = data_io.data_loaders.setup_data_loaders(par)
-        #return (None, None) # for now
+        return (None, None) # for now
 
     return (train_loader, test_loader)
 
