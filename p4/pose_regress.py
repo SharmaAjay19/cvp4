@@ -272,7 +272,7 @@ def ut_compute_and_viz_angular_error_metrics(par):
         Finally, pick a value of $\kappa$ that makes the unit test return True
         and explain in your writeup why it makes sense.
         """
-        kappa = 0.1 # <-- update this value
+        kappa = 2.0 # <-- updated the kappa value here for which the unit test returns True
 
     o_true = np.linspace(0, 2*np.pi, K)
     # for o_est sample o_err from vonMises around omega=0 then add to o_true
@@ -455,9 +455,10 @@ def train_and_test(par):
         or
         train_util.diff_1m_cos_loss()
         """
-        loss_func = None
-        optimizer = None  # we suggest starting with "Adam", learning rate 1e-3
-
+        #loss_func = None
+        #optimizer = None  # we suggest starting with "Adam", learning rate 1e-3
+        loss_func = nn.MSELoss(reduction='sum')
+        optimizer = optim.Adam(net1.parameters(), lr=1e-4, weight_decay=1e-5)
 
     n_epochs = par['n_epochs']
 
@@ -510,7 +511,10 @@ def train_and_test(par):
             if par['instructor_version']:
                 pass
             else:
-                loss = DummyLossValue()
+                #loss = DummyLossValue()
+                loss = loss_func(y_est_m, y_gt_m)
+                loss.backward()
+                optimizer.step()
 
             epoch_loss += loss.detach().item()
                 

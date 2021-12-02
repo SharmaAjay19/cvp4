@@ -1,0 +1,118 @@
+C:\Users\ajsharm\Documents\Courses\PMP\ComputerVision\Projects\cvp4\p4>py pose_regress.py --mode=train_and_test --n_epochs=60 --eval_every_n_epochs=3 --h5_filename=data/pontiac_360.h5 --outdir=out --split_name=cvd_split_every5  --viz_pose3d
+device: cpu
+device: cpu
+-----train_and_test-----
+C:\Python38\lib\site-packages\torch\nn\modules\lazy.py:178: UserWarning: Lazy modules are a new feature under heavy development so changes to the API or functionality can happen at any moment.
+  warnings.warn('Lazy modules are a new feature under heavy development '
+----- setup_data_loaders()
+starting training: 2021-12-02_07-57-16
+Performing testing (epoch 0)
+viz saved to out\hist_angular_error_1mc__train__epoch_0000.png
+epoch 0/60, train mean loss 3.2591
+viz saved to out\hist_angular_error_1mc__test__epoch_0000.png
+epoch 0/60, test mean loss 3.1676
+Performing testing (epoch 3)
+viz saved to out\hist_angular_error_1mc__train__epoch_0003.png
+epoch 3/60, train mean loss 2.6332
+viz saved to out\hist_angular_error_1mc__test__epoch_0003.png
+epoch 3/60, test mean loss 2.5340
+Performing testing (epoch 6)
+viz saved to out\hist_angular_error_1mc__train__epoch_0006.png
+epoch 6/60, train mean loss 2.0549
+viz saved to out\hist_angular_error_1mc__test__epoch_0006.png
+epoch 6/60, test mean loss 1.9467
+Performing testing (epoch 9)
+viz saved to out\hist_angular_error_1mc__train__epoch_0009.png
+epoch 9/60, train mean loss 2.2937
+viz saved to out\hist_angular_error_1mc__test__epoch_0009.png
+epoch 9/60, test mean loss 2.1764
+Performing testing (epoch 12)
+viz saved to out\hist_angular_error_1mc__train__epoch_0012.png
+epoch 12/60, train mean loss 1.7440
+viz saved to out\hist_angular_error_1mc__test__epoch_0012.png
+epoch 12/60, test mean loss 1.6328
+Performing testing (epoch 15)
+viz saved to out\hist_angular_error_1mc__train__epoch_0015.png
+epoch 15/60, train mean loss 1.5036
+viz saved to out\hist_angular_error_1mc__test__epoch_0015.png
+epoch 15/60, test mean loss 1.3868
+Performing testing (epoch 18)
+viz saved to out\hist_angular_error_1mc__train__epoch_0018.png
+epoch 18/60, train mean loss 1.3527
+viz saved to out\hist_angular_error_1mc__test__epoch_0018.png
+epoch 18/60, test mean loss 1.2397
+Performing testing (epoch 21)
+viz saved to out\hist_angular_error_1mc__train__epoch_0021.png
+epoch 21/60, train mean loss 1.2788
+viz saved to out\hist_angular_error_1mc__test__epoch_0021.png
+epoch 21/60, test mean loss 1.1425
+Performing testing (epoch 24)
+viz saved to out\hist_angular_error_1mc__train__epoch_0024.png
+epoch 24/60, train mean loss 1.6152
+viz saved to out\hist_angular_error_1mc__test__epoch_0024.png
+epoch 24/60, test mean loss 1.4923
+Performing testing (epoch 27)
+viz saved to out\hist_angular_error_1mc__train__epoch_0027.png
+epoch 27/60, train mean loss 0.7289
+viz saved to out\hist_angular_error_1mc__test__epoch_0027.png
+epoch 27/60, test mean loss 0.6158
+Performing testing (epoch 30)
+viz saved to out\hist_angular_error_1mc__train__epoch_0030.png
+epoch 30/60, train mean loss 0.6683
+viz saved to out\hist_angular_error_1mc__test__epoch_0030.png
+epoch 30/60, test mean loss 0.5591
+Performing testing (epoch 33)
+viz saved to out\hist_angular_error_1mc__train__epoch_0033.png
+epoch 33/60, train mean loss 1.2783
+viz saved to out\hist_angular_error_1mc__test__epoch_0033.png
+epoch 33/60, test mean loss 1.1599
+Performing testing (epoch 36)
+viz saved to out\hist_angular_error_1mc__train__epoch_0036.png
+epoch 36/60, train mean loss 0.8673
+viz saved to out\hist_angular_error_1mc__test__epoch_0036.png
+epoch 36/60, test mean loss 0.7607
+Performing testing (epoch 39)
+viz saved to out\hist_angular_error_1mc__train__epoch_0039.png
+epoch 39/60, train mean loss 0.7842
+viz saved to out\hist_angular_error_1mc__test__epoch_0039.png
+epoch 39/60, test mean loss 0.7068
+Performing testing (epoch 42)
+viz saved to out\hist_angular_error_1mc__train__epoch_0042.png
+epoch 42/60, train mean loss 1.1691
+viz saved to out\hist_angular_error_1mc__test__epoch_0042.png
+epoch 42/60, test mean loss 1.0252
+Performing testing (epoch 45)
+viz saved to out\hist_angular_error_1mc__train__epoch_0045.png
+epoch 45/60, train mean loss 0.9242
+viz saved to out\hist_angular_error_1mc__test__epoch_0045.png
+epoch 45/60, test mean loss 0.8084
+Performing testing (epoch 48)
+viz saved to out\hist_angular_error_1mc__train__epoch_0048.png
+epoch 48/60, train mean loss 0.4496
+viz saved to out\hist_angular_error_1mc__test__epoch_0048.png
+epoch 48/60, test mean loss 0.3746
+Performing testing (epoch 51)
+viz saved to out\hist_angular_error_1mc__train__epoch_0051.png
+epoch 51/60, train mean loss 1.2962
+viz saved to out\hist_angular_error_1mc__test__epoch_0051.png
+epoch 51/60, test mean loss 1.1848
+Performing testing (epoch 54)
+viz saved to out\hist_angular_error_1mc__train__epoch_0054.png
+epoch 54/60, train mean loss 0.7099
+viz saved to out\hist_angular_error_1mc__test__epoch_0054.png
+epoch 54/60, test mean loss 0.6219
+Performing testing (epoch 57)
+viz saved to out\hist_angular_error_1mc__train__epoch_0057.png
+epoch 57/60, train mean loss 0.6544
+viz saved to out\hist_angular_error_1mc__test__epoch_0057.png
+epoch 57/60, test mean loss 0.5369
+Performing testing (epoch 59)
+viz saved to out\hist_angular_error_1mc__train__epoch_0059.png
+epoch 59/60, train mean loss 0.3891
+viz saved to out\hist_angular_error_1mc__test__epoch_0059.png
+epoch 59/60, test mean loss 0.2764
+train begin:end 2021-12-02_07-57-16 : 2021-12-02_08-13-44
+Generating visualization: pose-consistent 3-axis pattern projected on the source images
+----- setup_data_loaders()
+> c:\users\ajsharm\documents\courses\pmp\computervision\projects\cvp4\p4\pose_regress.py(606)train_and_test()
+-> print('Finita la comedia')
