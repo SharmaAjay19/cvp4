@@ -117,7 +117,7 @@ def viz_histogram(o_err, par):
         else:
             viz_filename_suffix = ''
         viz_filename_base = 'hist_angular_error_1mc'
-        viz_filename = '{}{}.pdf'.format(viz_filename_base,viz_filename_suffix)
+        viz_filename = '{}{}.png'.format(viz_filename_base,viz_filename_suffix)
         viz_filepath = os.path.join(par['outdir'],viz_filename)
         plt.savefig(viz_filepath)
         plt.close()
@@ -135,7 +135,7 @@ def viz_kde(o_err, par):
     else:
         viz_filename_suffix = ''
     viz_filename_base = 'kde_error'
-    viz_filename = '{}{}.pdf'.format(viz_filename_base,viz_filename_suffix)
+    viz_filename = '{}{}.png'.format(viz_filename_base,viz_filename_suffix)
     viz_filepath = os.path.join(par['outdir'],viz_filename)
 
     k_type_opt = ['gaussian', 'epanechnikov']
@@ -233,7 +233,7 @@ def unit_test(par):
 
     viz_hist_o_err = True
     if viz_hist_o_err:
-        viz_file_name = 'hist_o_err.pdf'
+        viz_file_name = 'hist_o_err.png'
         """
         20210115 :TODO: plot the normalized histogram "hcn", Title=Histogram of $\omega_{textrm{true}} - \omega_{\textrm{est}}$
         use this color-scheme/style (except initially we won't compute/plot the smooth curve, unless that capability is part of Seaborn, i.e., we get it for free)
@@ -301,7 +301,7 @@ def unit_test(par):
 
     viz_hist_err1mc = True
     if viz_hist_err1mc:
-        viz_file_name = 'hist_err1mc.pdf'
+        viz_file_name = 'hist_err1mc.png'
         # 20210115 :TODO: plot the normalized histogram "hcn", Title=Histogram of $0.5 (1-cos(\omega_{textrm{true}} - \omega_{\textrm{est}}))$
         #[CVD] see above re viz_par
         color_faces = matplotlib.colors.CSS4_COLORS['lightsteelblue']

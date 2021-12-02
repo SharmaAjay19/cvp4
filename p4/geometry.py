@@ -79,19 +79,19 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
 
         """
         R = np.eye(3)
-        forward = (at_world - eye_world)
-        forward = forward / np.linalg.norm(forward)
-        random_vector = np.array([0, 0, 1])
-        random_vector = random_vector / np.linalg.norm(random_vector)
-        right = np.cross(random_vector, forward)
-        up = np.cross(forward, right)
-        R[:, 0] = right
-        R[:, 1] = up
-        R[:, 2] = forward
+        z_axis = (at_world - eye_world)
+        z_axis = z_axis / np.linalg.norm(z_axis)
+
+        # cross product z_axis with vertical axis to get x_axis, because camera has no roll
+        vertical_axis_unit_vector = np.array([0, 0, 1])
+        x_axis = np.cross(vertical_axis_unit_vector, z_axis)
+        x_axis = x_axis / np.linalg.norm(x_axis)
+        y_axis = np.cross(z_axis, x_axis)
+        y_axis = y_axis / np.linalg.norm(y_axis)
+        R[:, 0] = x_axis
+        R[:, 1] = y_axis
+        R[:, 2] = z_axis
         T = eye_world
-        # for now we create placeholders 
-        #R = np.eye(3)
-        #T = np.array([2,2,2])
 
 
     P1[0:3,0:3] = R
@@ -124,18 +124,15 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
         pass
     else:
         """
-        :TODO:
-          add your code to form P
+          added my code to form P
           then call
           P = P.T
 
-        if your P is correct then
-
-        assert np.allclose(P, P1) <-- should not fail!
+        to check that P is correct added a assert
         """
-        P[0:3, 0:3] = R.T
-        P[-1, 0:3] = T
-        P = np.linalg.pinv(P)
+        P[0:3, 0:3] = R
+        V = -np.dot(R.T, T)
+        P[-1, 0:3] = V
         P = P.T
         assert np.allclose(P, P1)
         pass
