@@ -114,7 +114,7 @@ def setup_xforms_and_data_loaders(par):
         pass
     else:
         """
-        :TODO: this is a one-liner:
+        this is a one-liner:
         call setup_data_loaders(par) defined in data_io.data_loaders
         It returns a tuple (train loader, test loader)
         """
@@ -158,7 +158,7 @@ def load_batch_of_data(data_loader, par):
         pass
     else:
         """
-        :TODO: get a batch of data by
+        get a batch of data by
         "wrapping" data_loader in an iterator, i.e., iter(...)
         and calling next(...) on the iterator
         """
