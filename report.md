@@ -294,6 +294,73 @@ So here are our observations uptil now:
 
 We have seen that by changing little things in model architecture, we have achieved a performance gain of about 20%.
 
+### Changing the output of neural network to predict cos and sin
+
+For this part, I basically added a new mode called train_and_test_2_out for which I updated the n_out parameter to 2.
+
+```
+par.update({'viz_hist': True,
+                'n_out' : 2 if par['mode'] == 'train_and_test_2_out' else 1})
+```
+
+And then added L2 normalization upon regression output in the forward method of the model class.
+
+```
+def forward(self, x):
+        output = self.m_regress(x)
+        if self.mode == 'train_and_test_2_out':
+            output = F.normalize(output)
+        return output
+```
+
+Since we are now predicting the cosine and sine of the angle (camera position) for our RMS error metric, we need to convert the cos and sine values to angle, for this, I made a small change to my rmserror function as below:
+
+```
+def rmserror(o1, o2, mode):
+    if mode == 'train_and_test_2_out':
+        o1 = o1.detach().numpy()
+        o2 = o2.detach().numpy()
+        o1 = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, o1)
+        o2 = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, o2)
+        error = o1-o2
+        error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
+        rmse = np.sqrt(np.mean(np.square(error_normalized)))
+        return rmse
+    else:
+        error = o1-o2
+        error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
+        rmse = torch.sqrt(torch.mean(torch.square(error_normalized)))
+        return rmse.item()
+```
+
+After making these changes I ran the code in train_and_test_2_out mode using below command:
+
+```
+py pose_regress.py --mode=train_and_test_2_out --n_epochs=100 --eval_every_n_epochs=5 --h5_filename=data/pontiac_360.h5 --outdir=out --split_name=cvd_split_every5  --viz_pose3d
+```
+
+The best value of RMSE error I could achieve with this is:
+
+Num_epoch = 70
+
+Train set error = 0.097
+
+Test set error = 0.095
+
+This is in radians, converting to degrees
+
+Train set error = 5.55
+
+Test set error = 5.44
+
+Below are the Loss-Epoch curve and Error-Epoch curve
+
+| Loss-Epoch Curve | Error-Epoch Curve |
+| --- | --- |
+| <img src="p4/out/GoodShots/nnthirdrun/MetricEpochCurve_Losses.png"/> | <img src="p4/out/GoodShots/nnthirdrun/MetricEpochCurve_Errors.png"/> |
+
+This is the best performance achieved so far in terms of the error metric.
+
 ### Conclusion
 
-I started this assignment with knowledge of camera projection and by the end of it, I am able to build a neural network that can predict the right camera angle with a pretty low error rate. Starting with basic CNN architecture I was able to achieve a good model which when analyzed qualitatively, has some really good 3-axis pattern projections. I then changed the model architecture a bit by changing kernel size of convolution filters and adding batch normalization. This improved the performance both quantitatively and qualitatively as can be seen in above observations.
+I started this assignment with knowledge of camera projection and by the end of it, I am able to build a neural network that can predict the right camera angle with a pretty low error rate. Starting with basic CNN architecture I was able to achieve a good model which when analyzed qualitatively, has some really good 3-axis pattern projections. I then changed the model architecture a bit by changing kernel size of convolution filters and adding batch normalization. This improved the performance both quantitatively and qualitatively as can be seen in above observations. Further after, I changed the neural network model to output cos and sin of angle as two outputs instead of angle only. Running this made it even better and I was able to achieve error in the range of 0.097 radians on train set and 0.095 on test set which is nearly ~5.5 degrees.

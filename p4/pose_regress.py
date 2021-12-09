@@ -357,7 +357,7 @@ def train_and_test(par):
 
 
     par.update({'viz_hist': True,
-                'n_out' : 1})
+                'n_out' : 2 if par['mode'] == 'train_and_test_2_out' else 1})
     img_shape_train = (64,64)
     par.update({'img_h':img_shape_train[0],'img_w':img_shape_train[1]})
 
@@ -494,32 +494,41 @@ def train_and_test(par):
             #print('batch_idx: {} inst_id: {}'.format(batch_idx, inst_id))
             #print('img.shape -> {} omega.shape -> {}'.format(img.shape, omega.shape))
 
-            y_gt = omega
-            y_gt = y_gt.to(device)
-            x  = img.to(device)
-
-            y_est = net1(x)
-
-            """
-            We could have defined a data loader that skips data/samples that 
-            are outside of our chosen omega-range. Here, we are not too concerned
-            with computational efficienty so we evaluate net1() on the entire bath
-            than rely on PyTorch "mask" functionality to create a view of the tensor
-            that excludes the values outside the omega-range. This PyTorch functionaly
-            will correctly compute the loss function, even if the *_m tensors are empty
-            (in which case the loss would be zero and no gradients would be backpropagated
-            """
-            y_gt_m, y_est_m, x_m = omega_mask(y_gt, y_est, x)
-                
-            for t_ in [(y_gt_all, y_gt_m), (y_est_all, y_est_m)]:
-                t_[0].append(t_[1].cpu().detach().numpy())
+            if par['mode'] == 'train_and_test_2_out':
+                y_gt = torch.cat((torch.cos(omega), torch.sin(omega)), 1)
+                y_gt = y_gt.to(device)
+                x  = img.to(device)
+                y_est = net1(x)
+                y_gt_all.append(y_gt.detach().numpy())
+                y_est_all.append(y_est.detach().numpy())
+            else:
+                y_gt = omega
+                y_gt = y_gt.to(device)
+                x  = img.to(device)
+                y_est = net1(x)
+                """
+                We could have defined a data loader that skips data/samples that 
+                are outside of our chosen omega-range. Here, we are not too concerned
+                with computational efficienty so we evaluate net1() on the entire bath
+                than rely on PyTorch "mask" functionality to create a view of the tensor
+                that excludes the values outside the omega-range. This PyTorch functionaly
+                will correctly compute the loss function, even if the *_m tensors are empty
+                (in which case the loss would be zero and no gradients would be backpropagated
+                """
+                y_gt_m, y_est_m, x_m = omega_mask(y_gt, y_est, x)
+                    
+                for t_ in [(y_gt_all, y_gt_m), (y_est_all, y_est_m)]:
+                    t_[0].append(t_[1].cpu().detach().numpy())
 
 
             if par['instructor_version']:
                 pass
             else:
                 #loss = DummyLossValue()
-                loss = loss_func(y_est_m, y_gt_m)
+                if par['mode'] == 'train_and_test_2_out':
+                    loss = loss_func(y_est, y_gt)
+                else:
+                    loss = loss_func(y_est_m, y_gt_m)
                 loss.backward()
                 optimizer.step()
 
@@ -567,9 +576,6 @@ def train_and_test(par):
                 print('epoch {}/{}, {} mean loss {:.4f} rmse error {:.4f}'.format(epoch, n_epochs, S_, loss, rmse_error))
 
         epoch_losses.append(epoch_loss)
-
-        if epoch >15 and epoch < 22:
-            train_util.plotLossEpochs([train_losses, test_losses], [train_errors, test_errors], epoch_numbers)
 
     timestamp_train_end = train_util.get_timestamp()
     train_util.plotLossEpochs([train_losses, test_losses], [train_errors, test_errors], epoch_numbers)
@@ -640,7 +646,7 @@ def main(par):
             pass
     if mode == 'unit_test':
         run_all_unit_tests(par)
-    elif mode == 'train_and_test':
+    elif mode == 'train_and_test' or mode == 'train_and_test_2_out':
         if 'split_name' not in par or par['split_name'] is None:
             par.update({'split_name':'cvd_split_entire'})
         train_and_test(par)
@@ -652,7 +658,7 @@ def main(par):
 ######################################################################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', required=True, choices={'unit_test', 'train_and_test'})
+    parser.add_argument('--mode', required=True, choices={'unit_test', 'train_and_test', 'train_and_test_2_out'})
     parser.add_argument('--h5_filename', default=None)
     parser.add_argument('--split_name', required=False)
     parser.add_argument('--rng_seed', type=int, required=False)

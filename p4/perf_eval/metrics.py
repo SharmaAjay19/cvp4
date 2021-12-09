@@ -43,11 +43,21 @@ import torch
 fontsize = 18
 
 
-def rmserror(o1, o2):
-    error = o1-o2
-    error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
-    rmse = torch.sqrt(torch.mean(torch.square(error_normalized)))
-    return rmse.item()
+def rmserror(o1, o2, mode):
+    if mode == 'train_and_test_2_out':
+        o1 = o1.detach().numpy()
+        o2 = o2.detach().numpy()
+        o1 = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, o1)
+        o2 = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, o2)
+        error = o1-o2
+        error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
+        rmse = np.sqrt(np.mean(np.square(error_normalized)))
+        return rmse
+    else:
+        error = o1-o2
+        error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
+        rmse = torch.sqrt(torch.mean(torch.square(error_normalized)))
+        return rmse.item()
 
 
 #########################################################################

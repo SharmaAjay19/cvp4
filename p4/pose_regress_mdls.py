@@ -61,6 +61,7 @@ class PoseRegression_v1(nn.Module):
         # the next two attributes are required by train_util.perform_testing()
         self.conv_feats = True
         self.regression_problem=True
+        self.mode = par['mode']
 
         self.out_channels = 64
         self.n_hidden = 128
@@ -89,6 +90,7 @@ class PoseRegression_v1(nn.Module):
         # the next two attributes are required by train_util.perform_testing()
         self.conv_feats = True
         self.regression_problem=True
+        self.mode = par['mode']
 
         self.out_channels = 64
         self.n_hidden = 128
@@ -114,7 +116,6 @@ class PoseRegression_v1(nn.Module):
 
     def forward(self, x):
         output = self.m_regress(x)
+        if self.mode == 'train_and_test_2_out':
+            output = F.normalize(output)
         return output
-
-
-

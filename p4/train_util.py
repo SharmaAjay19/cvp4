@@ -31,6 +31,7 @@ Instructor: Vitaly Ablavsky
 
 from pdb import set_trace as keyboard
 import torch
+import numpy as np
 import perf_eval.metrics
 
 import time
@@ -47,6 +48,9 @@ def get_timestamp():
 #           compute_and_viz_angular_error_metrics
 #########################################################################
 def compute_and_viz_angular_error_metrics(y_gt, y_est, par):
+    if par['mode'] == 'train_and_test_2_out':
+        y_gt = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, y_gt)
+        y_est = np.apply_along_axis(lambda x: np.arctan2(x[0], x[1]), 0, y_est)
     o_err = perf_eval.metrics.angular_diff_1m_cos(y_gt, y_est)
     h_counts, h_bins_e = perf_eval.metrics.viz_histogram(o_err, par)
 
@@ -165,7 +169,10 @@ def perform_testing(par, model, loss_func, device, loader, name):
             x = img
             if not hasattr(model,'conv_feats'): # model is an MLP
                 x  = x.flatten(1)
-            y_omega_gt = omega
+            if par['mode'] == 'train_and_test_2_out':
+                y_omega_gt = torch.cat((torch.cos(omega), torch.sin(omega)), 1)
+            else:
+                y_omega_gt = omega
             x  = x.to(device)
             y_omega_gt = y_omega_gt.to(device)
 
@@ -175,11 +182,14 @@ def perform_testing(par, model, loss_func, device, loader, name):
                 y_gt = pose1D_to_pose_class_v2(y_omega_gt, par['class_proto'])
             
             y_est = model(x)
-            y_gt_m, y_est_m, x_m = omega_mask(y_gt, y_est, x)
 
-            n_samples += y_gt_m.shape[0]
-
-            loss = loss_func(y_est_m, y_gt_m)
+            if par['mode'] == 'train_and_test_2_out':
+                loss = loss_func(y_est, y_gt)
+                n_samples += y_gt.detach().numpy().shape[0]
+            else:
+                y_gt_m, y_est_m, x_m = omega_mask(y_gt, y_est, x)
+                n_samples += y_gt_m.shape[0]
+                loss = loss_func(y_est_m, y_gt_m)
             
             if False:
                 if par['regression_problem']:
@@ -196,9 +206,14 @@ def perform_testing(par, model, loss_func, device, loader, name):
                 
 
 
-            for t_ in [(y_gt_all, y_gt_m), (y_est_all, y_est_m)]:
-                #t_[0].append(t_[1].cpu().detach().numpy())
-                t_[0].append(t_[1])
+            if par['mode'] == 'train_and_test_2_out':
+                y_gt_all.append(y_gt)
+                y_est_all.append(y_est)
+                pass
+            else:
+                for t_ in [(y_gt_all, y_gt_m), (y_est_all, y_est_m)]:
+                    #t_[0].append(t_[1].cpu().detach().numpy())
+                    t_[0].append(t_[1])
 
 
     epoch_loss /= n_samples 
@@ -210,7 +225,10 @@ def perform_testing(par, model, loss_func, device, loader, name):
             name, epoch_loss))
 
     y_est_all = torch.cat(y_est_all)
-    y_gt_all = torch.cat(y_gt_all).reshape(-1,1) # column vector
-    rmse_error = perf_eval.metrics.rmserror(y_est_all, y_gt_all)
+    if par['mode'] == 'train_and_test_2_out':
+        y_gt_all = torch.cat(y_gt_all)
+    else:
+        y_gt_all = torch.cat(y_gt_all).reshape(-1,1) # column vector
+    rmse_error = perf_eval.metrics.rmserror(y_est_all, y_gt_all, par['mode'])
     return (epoch_loss, acc, y_est_all, y_gt_all, rmse_error)
 
