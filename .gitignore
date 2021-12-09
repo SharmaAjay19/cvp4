@@ -1,3 +1,7 @@
 data/
 out/
 **/__pycache__/
+**.txt
+submission/
+**.png
+**/test/

@@ -458,7 +458,8 @@ def train_and_test(par):
         #loss_func = None
         #optimizer = None  # we suggest starting with "Adam", learning rate 1e-3
         loss_func = nn.MSELoss(reduction='sum')
-        optimizer = optim.Adam(net1.parameters(), lr=1e-4, weight_decay=1e-5)
+        #loss_func = train_util.diff_1m_cos_loss()
+        optimizer = optim.Adam(net1.parameters(), lr=5e-5, weight_decay=1e-5)
 
     n_epochs = par['n_epochs']
 
@@ -467,6 +468,12 @@ def train_and_test(par):
     on the train/test partition so we can plot it at a later time.
     """
     epoch_losses = []
+
+    train_losses = []
+    test_losses = []
+    train_errors = []
+    test_errors = []
+    epoch_numbers = []
 
     timestamp_train_begin = train_util.get_timestamp()
     print('starting training: {}'.format(timestamp_train_begin))
@@ -540,21 +547,32 @@ def train_and_test(par):
 
         if final_epoch or (epoch % par['eval_every_n_epochs'] == 0):
             if verbose: print('Performing testing (epoch {})'.format(epoch))
+            epoch_numbers.append(epoch)
             for dloader_,S_ in [(train_loader,'train'), (test_loader,'test')]:
                 par.update({'viz_filename_suffix' : '__{}__epoch_{:04d}'.format(S_,epoch)})
                 eval_result = train_util.perform_testing(par, net1, loss_func, device, dloader_, S_)
-                (loss, acc, y_est_all, y_gt_all) = eval_result
+                (loss, acc, y_est_all, y_gt_all, rmse_error) = eval_result
+                if S_ == "train":
+                    train_losses.append(loss)
+                    train_errors.append(rmse_error)
+                if S_ == "test":
+                    test_losses.append(loss)
+                    test_errors.append(rmse_error)
                 if y_est_all is not None:
                     train_util.compute_and_viz_angular_error_metrics(y_gt_all.cpu().detach().numpy(),
                                                                      y_est_all.cpu().detach().numpy(),
                                                                      par)
                 else:
                     print('skipping visualization (since y_est_all is None)')
-                print('epoch {}/{}, {} mean loss {:.4f}'.format(epoch, n_epochs, S_, loss))
+                print('epoch {}/{}, {} mean loss {:.4f} rmse error {:.4f}'.format(epoch, n_epochs, S_, loss, rmse_error))
 
         epoch_losses.append(epoch_loss)
 
+        if epoch >15 and epoch < 22:
+            train_util.plotLossEpochs([train_losses, test_losses], [train_errors, test_errors], epoch_numbers)
+
     timestamp_train_end = train_util.get_timestamp()
+    train_util.plotLossEpochs([train_losses, test_losses], [train_errors, test_errors], epoch_numbers)
     print('train begin:end {} : {}'.format(timestamp_train_begin,timestamp_train_end))
     
     if par['viz_pose3d']:
@@ -614,6 +632,12 @@ def main(par):
     numpy_randgen = np.random.RandomState(par['rng_seed']) if par['rng_seed'] is not None else np.random.RandomState()
     par.update({'numpy_randgen':numpy_randgen})
     mode=par['mode']
+    if "outdir" in par and par["outdir"]:
+        try:
+            os.mkdir(par["outdir"])
+        except Exception as e:
+            #print("Error in creating out directory", e)
+            pass
     if mode == 'unit_test':
         run_all_unit_tests(par)
     elif mode == 'train_and_test':

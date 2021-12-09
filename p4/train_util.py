@@ -51,7 +51,27 @@ def compute_and_viz_angular_error_metrics(y_gt, y_est, par):
     h_counts, h_bins_e = perf_eval.metrics.viz_histogram(o_err, par)
 
     return (h_counts, h_bins_e)
-        
+
+
+def plotLossEpochs(train_test_losses, train_test_errors, epoch_numbers, figure_file_name="MetricEpochCurve"):
+    #print(train_test_losses, train_test_errors, epoch_numbers)
+    import pandas as pd
+    train_loss = list(train_test_losses[0])
+    test_loss = list(train_test_losses[1])
+    train_errors = list(train_test_errors[0])
+    test_errors = list(train_test_errors[1])
+    dset = [[epoch_numbers, train_loss[i], test_loss[i]] for i in range(len(train_loss))]
+    df = pd.DataFrame(dset, columns=["Epochs", "Train Loss", "Test Loss"])
+    fig = df.plot(x="Epochs").get_figure()
+    #fig.show()
+    fig.savefig(f"{figure_file_name}_Losses.png", format="png")
+    # Errors
+    dset = [[epoch_numbers, train_errors[i], test_errors[i]] for i in range(len(train_errors))]
+    df = pd.DataFrame(dset, columns=["Epochs", "Train Error (RMSE)", "Test Error (RMSE)"])
+    fig = df.plot(x="Epochs").get_figure()
+    #fig.show()
+    fig.savefig(f"{figure_file_name}_Errors.png", format="png")
+
 #########################################################################
 #          diff_1m_cos_loss
 #########################################################################
@@ -191,5 +211,6 @@ def perform_testing(par, model, loss_func, device, loader, name):
 
     y_est_all = torch.cat(y_est_all)
     y_gt_all = torch.cat(y_gt_all).reshape(-1,1) # column vector
-    return (epoch_loss, acc, y_est_all, y_gt_all)
+    rmse_error = perf_eval.metrics.rmserror(y_est_all, y_gt_all)
+    return (epoch_loss, acc, y_est_all, y_gt_all, rmse_error)
 

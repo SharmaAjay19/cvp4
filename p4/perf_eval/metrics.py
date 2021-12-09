@@ -38,8 +38,17 @@ import numpy as np
 from sklearn.neighbors import KernelDensity
 import matplotlib.pyplot as plt
 import matplotlib.colors
+import torch
 
 fontsize = 18
+
+
+def rmserror(o1, o2):
+    error = o1-o2
+    error_normalized = np.fmod(np.fmod(error+np.pi, 2*np.pi)+2*np.pi, 2*np.pi)-np.pi
+    rmse = torch.sqrt(torch.mean(torch.square(error_normalized)))
+    return rmse.item()
+
 
 #########################################################################
 #                        angular_diff_1m_cos(o1, o2)  
@@ -92,6 +101,7 @@ def angular_histogram_radians(omegas, omega_min, omega_max, n_bins):
 def viz_histogram(o_err, par):
     fontsize = 18
     n_bins = 8
+    #n_bins = 24 # I updated n_bins to 24 for reducing the error margin of each bin
     # :NOTE: h_bins_e partition the [0,1] range of the error metric 1m_cos
     # They should not be interpreted as angles!
     (h_counts, h_bins_e, h_bins_c) = angular_histogram_radians(o_err, 0, 1, n_bins)

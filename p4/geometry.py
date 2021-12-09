@@ -96,6 +96,7 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
 
     P1[0:3,0:3] = R
     P1[0:3,-1] = T
+    #print("P1", P1)
     """
     At this point, we have defined a transformation in the homogeneous coordinates that
     "moves" the camera's coordinate system (3-axis) from its old location, coincident with
@@ -107,6 +108,7 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
     thus:
     """
     P1 = np.linalg.pinv(P1) # pseudo-inverse via SVD
+    #print("P1_inv", P1)
     """
     Taking an inverse of P1 via pseudeo-inverse is wasteful because
     we are not taking advantage of the special structure of P1
@@ -133,7 +135,9 @@ def camera_xform_from_lookat(eye_coords, look_at_coords, instructor_version_flag
         P[0:3, 0:3] = R
         V = -np.dot(R.T, T)
         P[-1, 0:3] = V
+        #print("P", P)
         P = P.T
+        #print("P_T", P)
         assert np.allclose(P, P1)
         pass
     
